@@ -10,7 +10,7 @@ app.use(express.json());
 
 //connecting database
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASS}@redonion.uipb9.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -36,6 +36,13 @@ async function run() {
     app.get("/dinner", async (req, res) => {
       const result = await foodCollection.find({ type: "dinner" }).toArray();
       res.send(result);
+    });
+    //to get single food details
+    app.get("/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await foodCollection.findOne(query);
+      req.send(result);
     });
   } finally {
     //
