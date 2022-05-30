@@ -42,7 +42,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await foodCollection.findOne(query);
-      req.send(result);
+      res.send(result);
     });
   } finally {
     //
