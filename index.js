@@ -20,7 +20,23 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    const breakfastCollection = client.db("RedOnion").collection("breakfast");
+    const foodCollection = client.db("RedOnion").collection("food");
+
+    //to get all breakfast
+    app.get("/breakfast", async (req, res) => {
+      const result = await foodCollection.find({ type: "breakfast" }).toArray();
+      res.send(result);
+    });
+    //to get all lunch
+    app.get("/lunch", async (req, res) => {
+      const result = await foodCollection.find({ type: "lunch" }).toArray();
+      res.send(result);
+    });
+    //to get all dinner
+    app.get("/dinner", async (req, res) => {
+      const result = await foodCollection.find({ type: "dinner" }).toArray();
+      res.send(result);
+    });
   } finally {
     //
   }
