@@ -55,7 +55,6 @@ async function run() {
     app.put("/update-order/:id", async (req, res) => {
       const id = req.params.id;
       const updateDocu = req.body;
-      console.log(updateDocu);
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
@@ -76,6 +75,13 @@ async function run() {
       const email = req.params.email;
       const query = { OrderMail: email };
       const result = await orderCollection.find(query).toArray();
+      res.send(result);
+    });
+    //to remove Orders
+    app.delete("/remove-order/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
