@@ -22,6 +22,7 @@ async function run() {
     await client.connect();
     const foodCollection = client.db("RedOnion").collection("food");
     const orderCollection = client.db("RedOnion").collection("order");
+    const customerCollection = client.db("RedOnion").collection("customer");
 
     //to get all breakfast
     app.get("/breakfast", async (req, res) => {
@@ -82,6 +83,12 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+    //to save customar details
+    app.post("/customer-details", async (req, res) => {
+      const details = req.body;
+      const result = await customerCollection.insertOne(details);
       res.send(result);
     });
   } finally {
