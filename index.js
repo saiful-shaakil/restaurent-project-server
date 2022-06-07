@@ -4,10 +4,13 @@ const cors = require("cors");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
 
+//stripe
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 //middleware
 app.use(cors());
 app.use(express.json());
-
+const YOUR_DOMAIN = "http://localhost:5000";
 //connecting database
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -24,6 +27,18 @@ async function run() {
     const orderCollection = client.db("RedOnion").collection("order");
     const customerCollection = client.db("RedOnion").collection("customer");
 
+    //to checkout
+    app.post("/create-payment-intent", async (req, res) => {
+      const order = req.body;
+      const price = order.totalPrice;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
     //to get all breakfast
     app.get("/breakfast", async (req, res) => {
       const result = await foodCollection.find({ type: "breakfast" }).toArray();
@@ -83,6 +98,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+    //to remove full cart of a user
+    app.delete("/remove-cart/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { OrderMail: email };
+      const result = await orderCollection.deleteMany(query);
       res.send(result);
     });
     //to save customar details
